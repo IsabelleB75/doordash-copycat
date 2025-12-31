@@ -22,7 +22,7 @@ jobs:
       - name: Run Docker container
         run: docker run -d --name fee-service -p 8000:8090 doordash-fee-service
 
-      # Étape 4 : Attendre que l'API soit prête (avec retry)
+      # Étape 4 : Attendre que l'API soit prête
       - name: Wait for API to be ready
         run: |
           echo "Waiting for API to start..."
@@ -35,31 +35,20 @@ jobs:
             sleep 2
           done
 
-      # Étape 5 : Tester endpoint GET /
-      - name: Test root endpoint
-        run: curl --fail http://localhost:8000/
+      # Étape 5 : Installer les dépendances de test
+      - name: Install test dependencies
+        run: pip install pytest httpx
 
-      # Étape 6 : Tester endpoint GET /status/
-      - name: Test status endpoint
-        run: curl --fail http://localhost:8000/status/
+      # Étape 6 : Exécuter les tests pytest
+      - name: Run pytest
+        run: pytest -v
 
-      # Étape 7 : Tester endpoint GET /estimate-time/
-      - name: Test estimate-time endpoint
-        run: curl --fail http://localhost:8000/estimate-time/5
-
-      # Étape 8 : Tester endpoint POST /calculate-fee/
-      - name: Test calculate-fee endpoint
-        run: |
-          curl --fail -X POST http://localhost:8000/calculate-fee/ \
-            -H "Content-Type: application/json" \
-            -d '{"distance_km": 10, "weight_kg": 2}'
-
-      # Étape 9 : Afficher les logs (debug)
+      # Étape 7 : Afficher les logs (debug)
       - name: Show container logs
         if: always()
         run: docker logs fee-service
 
-      # Étape 10 : Arrêter et supprimer le conteneur
+      # Étape 8 : Arrêter et supprimer le conteneur
       - name: Stop and remove container
         if: always()
         run: |
