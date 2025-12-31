@@ -22,9 +22,18 @@ jobs:
       - name: Run Docker container
         run: docker run -d --name fee-service -p 8000:8000 doordash-fee-service
 
-      # Étape 4 : Attendre que l'API démarre
-      - name: Wait for API to start
-        run: sleep 5
+      # Étape 4 : Attendre que l'API soit prête (avec retry)
+      - name: Wait for API to be ready
+        run: |
+          echo "Waiting for API to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/status/ > /dev/null 2>&1; then
+              echo "API is ready!"
+              break
+            fi
+            echo "Attempt $i: API not ready yet, waiting..."
+            sleep 2
+          done
 
       # Étape 5 : Tester endpoint GET /
       - name: Test root endpoint
