@@ -20,7 +20,7 @@ jobs:
 
       # Étape 3 : Lancer le conteneur en arrière-plan
       - name: Run Docker container
-        run: docker run -d --name fee-service -p 8000:8000 doordash-fee-service
+        run: docker run -d --name fee-service -p 8000:8090 doordash-fee-service
 
       # Étape 4 : Attendre que l'API soit prête (avec retry)
       - name: Wait for API to be ready
